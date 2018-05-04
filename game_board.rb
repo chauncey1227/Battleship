@@ -40,17 +40,15 @@ class GameBoard
   end
 
   def get_placement game_piece
-    operators = { across: '%', down: '/'}
-    offset    = { across: [0,1], down: [1,0]}
+    max_search_vals = {
+      across: [@dimension - 1, @dimension - game_piece.size],
+      down: [@dimension - game_piece.size, @dimension - 1]
+    }
+    offsets = { across: [0,1], down: [1,0]}
     orientation = [:across, :down].sample
-    # Get a location for the game_piece. Depending on the orientation,
-    # limit the search space to empty locations where the piece could actually fit
-    operator = operators[orientation]
-    loc = (0...@dimension * @dimension).select.with_index do |x,i|
-      i.public_send(operator, @dimension) <= game_piece.size
-    end.sample
-    row,col = [ loc / @dimension, loc % @dimension]
-    dx, dy = offset[orientation]
+    max_row_val, max_col_val = max_search_vals[orientation]
+    row, col = [rand(0..max_row_val), rand(0..max_col_val)]
+    dx, dy = offsets[orientation]
     placement = (0..game_piece.size - 1).map{|i| [row+i*dx, col+i*dy]}
     return placement
   end
